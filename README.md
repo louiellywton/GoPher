@@ -12,14 +12,17 @@ A friendly command-line tool that demonstrates Go development best practices.
 ## Installation
 
 ### Homebrew (Recommended)
+
 ```bash
 brew install louiellywton/tap/hello-gopher
 ```
 
 ### Direct Download
+
 Download pre-compiled binaries from the [releases page](https://github.com/louiellywton/go-portfolio/releases).
 
 ### Go Install
+
 ```bash
 go install github.com/louiellywton/go-portfolio/01-hello-gopher/cmd/hello-gopher@latest
 ```
@@ -27,6 +30,7 @@ go install github.com/louiellywton/go-portfolio/01-hello-gopher/cmd/hello-gopher
 ## Usage
 
 ### Greeting Command
+
 ```bash
 # Default greeting
 hello-gopher greet
@@ -37,12 +41,14 @@ hello-gopher greet -n Bob
 ```
 
 ### Proverb Command
+
 ```bash
 # Display a random Go proverb
 hello-gopher proverb
 ```
 
 ### Version Information
+
 ```bash
 hello-gopher --version
 ```
@@ -72,10 +78,6 @@ go build -o hello-gopher ./cmd/hello-gopher
 go test ./... -race -cover
 ```
 
-## License
-
-MIT License - see LICENSE file for details.
-
 ## Contributing
 
-Contributions are welcome! Please read the contributing guidelines and submit pull requests for any improvements.
+Contributions are welcome! Please submit pull requests for any improvements. Contributing guidelines will be added as the project develops.
