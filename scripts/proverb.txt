@@ -1,0 +1,3 @@
+# Go Proverbs - Placeholder file
+# This file will be populated with actual Go proverbs in a later task
+Don't communicate by sharing memory, share memory by communicating.
