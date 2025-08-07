@@ -39,14 +39,4 @@ func (s *Service) Greet(name string) string {
 	return fmt.Sprintf("Hello, %s!", name)
 }
 
-// RandomProverb returns a random Go proverb
-func (s *Service) RandomProverb() string {
-	// Placeholder implementation - will be enhanced in later tasks
-	return "Don't communicate by sharing memory, share memory by communicating."
-}
-
-// LoadProverbs loads proverbs from embedded data
-func (s *Service) LoadProverbs() error {
-	// Placeholder implementation - will be enhanced in later tasks
-	return nil
-}
+// RandomProverb and LoadProverbs implementations are in proverb.go
