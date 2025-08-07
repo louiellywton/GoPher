@@ -37,7 +37,7 @@ Thumbs.db
 
 # Build artifacts
 dist/
-hello-gopher
+/hello-gopher
 hello-gopher.exe
 
 # Temporary files
