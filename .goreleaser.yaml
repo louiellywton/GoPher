@@ -1,0 +1,167 @@
+# GoReleaser configuration for hello-gopher CLI
+# This configuration builds cross-platform binaries and creates releases
+
+# Project metadata
+project_name: hello-gopher
+
+# Before hooks - run before building
+before:
+  hooks:
+    # Clean up any previous builds
+    - go mod tidy
+    # Run tests to ensure everything is working
+    - go test ./...
+
+# Build configuration
+builds:
+  - # Binary name
+    binary: hello-gopher
+    
+    # Main package path
+    main: ./cmd/hello-gopher
+    
+    # Build-time variable injection using ldflags
+    ldflags:
+      - -s -w # Strip debug info and symbol table
+      - -X github.com/louiellywton/go-portfolio/01-hello-gopher/cmd/hello-gopher/cmd.version={{.Version}}
+      - -X github.com/louiellywton/go-portfolio/01-hello-gopher/cmd/hello-gopher/cmd.buildDate={{.Date}}
+      - -X github.com/louiellywton/go-portfolio/01-hello-gopher/cmd/hello-gopher/cmd.gitCommit={{.Commit}}
+    
+    # Environment variables for the build
+    env:
+      - CGO_ENABLED=0
+    
+    # Target platforms and architectures
+    goos:
+      - linux
+      - darwin  # macOS
+      - windows
+    
+    goarch:
+      - amd64
+      - arm64
+    
+    # Ignore specific combinations if needed
+    ignore:
+      # Windows ARM64 support is limited, but we'll include it for completeness
+      # - goos: windows
+      #   goarch: arm64
+
+# Archive configuration
+archives:
+  - # Archive name format
+    name_template: >-
+      {{ .ProjectName }}_
+      {{- title .Os }}_
+      {{- if eq .Arch "amd64" }}x86_64
+      {{- else if eq .Arch "386" }}i386
+      {{- else }}{{ .Arch }}{{ end }}
+      {{- if .Arm }}v{{ .Arm }}{{ end }}
+    
+    # Archive format by OS
+    format_overrides:
+      - goos: windows
+        format: zip
+    
+    # Files to include in archives
+    files:
+      - README.md
+      - LICENSE
+
+# Checksum configuration
+checksum:
+  name_template: 'checksums.txt'
+
+# Snapshot configuration for development builds
+snapshot:
+  name_template: "{{ incpatch .Version }}-next"
+
+# Changelog configuration
+changelog:
+  sort: asc
+  filters:
+    exclude:
+      - '^docs:'
+      - '^test:'
+      - '^chore:'
+      - '^ci:'
+
+# Release configuration
+release:
+  # GitHub repository
+  github:
+    owner: louiellywton
+    name: go-portfolio
+  
+  # Release name template
+  name_template: "hello-gopher {{.Version}}"
+  
+  # Release notes
+  header: |
+    ## Hello-Gopher {{.Version}}
+    
+    A friendly CLI tool for Go enthusiasts that demonstrates best practices.
+  
+  footer: |
+    ## Installation
+    
+    ### Homebrew (Recommended)
+    ```bash
+    brew install louiellywton/tap/hello-gopher
+    ```
+    
+    ### Direct Download
+    Download the appropriate binary for your platform from the assets above.
+    
+    ### Go Install
+    ```bash
+    go install github.com/louiellywton/go-portfolio/01-hello-gopher/cmd/hello-gopher@{{.Version}}
+    ```
+    
+    ## Usage
+    
+    ```bash
+    # Greet the default gopher
+    hello-gopher greet
+    
+    # Greet someone specific
+    hello-gopher greet --name Alice
+    
+    # Get a random Go proverb
+    hello-gopher proverb
+    
+    # Show version information
+    hello-gopher --version
+    ```
+
+# Homebrew tap integration
+brews:
+  - # Repository information
+    repository:
+      owner: louiellywton
+      name: homebrew-tap
+      branch: main
+    
+    # Package metadata
+    name: hello-gopher
+    homepage: https://github.com/louiellywton/go-portfolio
+    description: "A friendly CLI tool for Go enthusiasts"
+    license: MIT
+    
+    # Installation script
+    install: |
+      bin.install "hello-gopher"
+    
+    # Test script to verify installation
+    test: |
+      system "#{bin}/hello-gopher", "--version"
+      system "#{bin}/hello-gopher", "greet", "--name", "Homebrew"
+
+# Universal binaries for macOS (combines amd64 and arm64)
+universal_binaries:
+  - replace: true
+    name_template: 'hello-gopher'
+
+# Metadata for the release
+metadata:
+  mod_timestamp: '{{ .CommitTimestamp }}'
