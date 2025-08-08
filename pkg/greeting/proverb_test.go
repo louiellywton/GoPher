@@ -1,6 +1,7 @@
 package greeting
 
 import (
+	"fmt"
 	"strings"
 	"testing"
 )
@@ -187,8 +188,9 @@ func TestEmptyProverbDataHandling(t *testing.T) {
 	if strings.HasPrefix(result, "Error loading proverbs:") || result == "No proverbs available" {
 		t.Errorf("RandomProverb() with empty proverbs should auto-load, got error: %s", result)
 	}
-}// Ben
-chmark tests for proverb functionality
+}
+
+// Benchmark tests for proverb functionality
 
 // BenchmarkService_LoadProverbs benchmarks proverb loading performance
 func BenchmarkService_LoadProverbs(b *testing.B) {
