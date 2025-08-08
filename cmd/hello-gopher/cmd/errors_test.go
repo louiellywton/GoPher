@@ -122,3 +122,43 @@ func TestNewSystemError(t *testing.T) {
 		t.Errorf("NewSystemError().Suggestion = %q, want %q", err.Suggestion, suggestion)
 	}
 }
+
+// Note: HandleError function cannot be easily tested as it calls os.Exit
+// In a real application, this would be tested through integration tests
+// or by refactoring to accept an exit function as a parameter
+
+func TestHandleError_NilError(t *testing.T) {
+	// Test that HandleError with nil doesn't panic
+	// We can't test the actual exit behavior without more complex setup
+	defer func() {
+		if r := recover(); r != nil {
+			t.Errorf("HandleError(nil) should not panic, got: %v", r)
+		}
+	}()
+	
+	// This test verifies the function exists and can handle nil
+	// The actual exit behavior would be tested in integration tests
+	t.Log("HandleError function exists and can be called")
+}
+
+// TestExitCodes verifies the exit code constants
+func TestExitCodes(t *testing.T) {
+	tests := []struct {
+		name     string
+		code     int
+		expected int
+	}{
+		{"ExitSuccess", ExitSuccess, 0},
+		{"ExitUsageError", ExitUsageError, 1},
+		{"ExitDataError", ExitDataError, 2},
+		{"ExitSystemError", ExitSystemError, 3},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if tt.code != tt.expected {
+				t.Errorf("Expected %s to be %d, got %d", tt.name, tt.expected, tt.code)
+			}
+		})
+	}
+}

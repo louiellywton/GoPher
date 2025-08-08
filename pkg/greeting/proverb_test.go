@@ -95,8 +95,8 @@ func TestRandomProverb(t *testing.T) {
 				t.Errorf("RandomProverb() returned empty string")
 			}
 
-			// Verify it doesn't return error messages for normal cases
-			if !tt.expectError && strings.Contains(result, "Error") {
+			// Verify it doesn't return actual error messages for normal cases
+			if !tt.expectError && strings.HasPrefix(result, "Error loading proverbs:") {
 				t.Errorf("RandomProverb() returned error message: %s", result)
 			}
 
@@ -179,7 +179,75 @@ func TestEmptyProverbDataHandling(t *testing.T) {
 	result := service.RandomProverb()
 	
 	// Should auto-load and return a valid proverb
-	if result == "" || strings.Contains(result, "Error") {
-		t.Errorf("RandomProverb() with empty proverbs should auto-load, got: %s", result)
+	if result == "" {
+		t.Errorf("RandomProverb() with empty proverbs should auto-load, got empty result")
 	}
+	
+	// Should not be an error message (but "Error" could be part of a valid proverb)
+	if strings.HasPrefix(result, "Error loading proverbs:") || result == "No proverbs available" {
+		t.Errorf("RandomProverb() with empty proverbs should auto-load, got error: %s", result)
+	}
+}// Ben
+chmark tests for proverb functionality
+
+// BenchmarkService_LoadProverbs benchmarks proverb loading performance
+func BenchmarkService_LoadProverbs(b *testing.B) {
+	for i := 0; i < b.N; i++ {
+		service := NewService()
+		service.LoadProverbs()
+	}
+}
+
+// BenchmarkService_RandomProverb benchmarks random proverb generation
+func BenchmarkService_RandomProverb(b *testing.B) {
+	service := NewService()
+	service.LoadProverbs()
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		service.RandomProverb()
+	}
+}
+
+// BenchmarkService_RandomProverbConcurrent benchmarks concurrent proverb access
+func BenchmarkService_RandomProverbConcurrent(b *testing.B) {
+	service := NewService()
+	service.LoadProverbs()
+	b.ResetTimer()
+	b.RunParallel(func(pb *testing.PB) {
+		for pb.Next() {
+			service.RandomProverb()
+		}
+	})
+}
+
+// BenchmarkService_RandomProverbWithAutoLoad benchmarks proverb with auto-loading
+func BenchmarkService_RandomProverbWithAutoLoad(b *testing.B) {
+	for i := 0; i < b.N; i++ {
+		service := NewService()
+		service.RandomProverb() // This will auto-load proverbs
+	}
+}
+
+// Example tests for proverb functionality
+
+// ExampleService_LoadProverbs demonstrates proverb loading
+func ExampleService_LoadProverbs() {
+	service := NewService()
+	err := service.LoadProverbs()
+	if err != nil {
+		fmt.Printf("Error: %v\n", err)
+		return
+	}
+	fmt.Println("Proverbs loaded successfully")
+	// Output: Proverbs loaded successfully
+}
+
+// ExampleService_RandomProverb demonstrates getting a random proverb
+func ExampleService_RandomProverb() {
+	service := NewService()
+	// Note: This example will show variable output due to randomness
+	// In real usage, you would get different proverbs each time
+	proverb := service.RandomProverb()
+	fmt.Printf("Got a proverb: %t\n", len(proverb) > 0)
+	// Output: Got a proverb: true
 }

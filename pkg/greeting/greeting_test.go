@@ -114,3 +114,65 @@ func ExampleService_Greet_defaultName() {
 	fmt.Println(greeting)
 	// Output: Hello, Gopher!
 }
+
+// Additional benchmark tests for performance validation
+
+// BenchmarkService_GreetEmpty benchmarks greeting with empty name
+func BenchmarkService_GreetEmpty(b *testing.B) {
+	service := NewService()
+	for i := 0; i < b.N; i++ {
+		service.Greet("")
+	}
+}
+
+// BenchmarkService_GreetLongName benchmarks greeting with long name
+func BenchmarkService_GreetLongName(b *testing.B) {
+	service := NewService()
+	longName := "VeryLongNameVeryLongNameVeryLongNameVeryLongNameVeryLongName" // Long name
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		service.Greet(longName)
+	}
+}
+
+// BenchmarkNewService benchmarks service creation
+func BenchmarkNewService(b *testing.B) {
+	for i := 0; i < b.N; i++ {
+		_ = NewService()
+	}
+}
+
+// BenchmarkService_GreetConcurrent benchmarks concurrent greeting calls
+func BenchmarkService_GreetConcurrent(b *testing.B) {
+	service := NewService()
+	b.RunParallel(func(pb *testing.PB) {
+		for pb.Next() {
+			service.Greet("ConcurrentUser")
+		}
+	})
+}
+
+// Additional example tests for documentation
+
+// ExampleService_Greet_specialCharacters demonstrates greeting with special characters
+func ExampleService_Greet_specialCharacters() {
+	service := NewService()
+	greeting := service.Greet("José")
+	fmt.Println(greeting)
+	// Output: Hello, José!
+}
+
+// ExampleService_Greet_longName demonstrates greeting with a long name
+func ExampleService_Greet_longName() {
+	service := NewService()
+	greeting := service.Greet("Alexander the Great")
+	fmt.Println(greeting)
+	// Output: Hello, Alexander the Great!
+}
+
+// ExampleNewService demonstrates service creation
+func ExampleNewService() {
+	service := NewService()
+	fmt.Printf("Service created: %T\n", service)
+	// Output: Service created: *greeting.Service
+}
