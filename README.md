@@ -43,11 +43,34 @@ If you have Go installed:
 go install github.com/louiellywton/go-portfolio/01-hello-gopher/cmd/hello-gopher@latest
 ```
 
-### Docker (Optional)
+### Docker
+
+Run hello-gopher in a container without installing anything locally:
 
 ```bash
+# Pull the latest image
+docker pull ghcr.io/louiellywton/hello-gopher:latest
+
+# Run with default greeting
+docker run --rm ghcr.io/louiellywton/hello-gopher:latest greet
+
+# Run with custom name
 docker run --rm ghcr.io/louiellywton/hello-gopher:latest greet --name Docker
+
+# Display a random proverb
+docker run --rm ghcr.io/louiellywton/hello-gopher:latest proverb
+
+# Show version information
+docker run --rm ghcr.io/louiellywton/hello-gopher:latest --version
+
+# Show help
+docker run --rm ghcr.io/louiellywton/hello-gopher:latest --help
 ```
+
+**Available Tags:**
+- `latest` - Latest stable release (multi-arch: amd64/arm64)
+- `v1.x.x` - Specific version tags
+- `v1.x` - Major.minor version tags
 
 ## 📖 Usage
 
@@ -199,6 +222,22 @@ gosec ./...
 
 # Check for vulnerabilities
 govulncheck ./...
+```
+
+### Docker Development
+
+```bash
+# Build Docker image locally
+docker build -t hello-gopher:dev .
+
+# Run the local image
+docker run --rm hello-gopher:dev greet --name Developer
+
+# Test the container
+docker run --rm hello-gopher:dev --version
+
+# Build multi-arch image (requires buildx)
+docker buildx build --platform linux/amd64,linux/arm64 -t hello-gopher:multi-arch .
 ```
 
 ### Project Structure

@@ -162,6 +162,74 @@ universal_binaries:
   - replace: true
     name_template: 'hello-gopher'
 
+# Docker image configuration
+dockers:
+  - # Image names and tags
+    image_templates:
+      - "ghcr.io/louiellywton/hello-gopher:latest"
+      - "ghcr.io/louiellywton/hello-gopher:{{ .Tag }}"
+      - "ghcr.io/louiellywton/hello-gopher:v{{ .Major }}"
+      - "ghcr.io/louiellywton/hello-gopher:v{{ .Major }}.{{ .Minor }}"
+    
+    # Dockerfile location
+    dockerfile: Dockerfile
+    
+    # Build context
+    build_flag_templates:
+      - "--pull"
+      - "--label=org.opencontainers.image.created={{.Date}}"
+      - "--label=org.opencontainers.image.title={{.ProjectName}}"
+      - "--label=org.opencontainers.image.revision={{.FullCommit}}"
+      - "--label=org.opencontainers.image.version={{.Version}}"
+      - "--label=org.opencontainers.image.source=https://github.com/louiellywton/go-portfolio"
+      - "--label=org.opencontainers.image.description=A friendly CLI tool for Go enthusiasts"
+      - "--label=org.opencontainers.image.licenses=MIT"
+    
+    # Only build for linux/amd64 and linux/arm64 for Docker
+    goos: linux
+    goarch: amd64
+    
+    # Use the binary from the build step
+    use: buildx
+    
+    # Platform configuration for multi-arch builds
+    build_flag_templates:
+      - "--platform=linux/amd64"
+
+  # Additional Docker image for ARM64
+  - image_templates:
+      - "ghcr.io/louiellywton/hello-gopher:latest-arm64"
+      - "ghcr.io/louiellywton/hello-gopher:{{ .Tag }}-arm64"
+    
+    dockerfile: Dockerfile
+    
+    build_flag_templates:
+      - "--pull"
+      - "--platform=linux/arm64"
+      - "--label=org.opencontainers.image.created={{.Date}}"
+      - "--label=org.opencontainers.image.title={{.ProjectName}}"
+      - "--label=org.opencontainers.image.revision={{.FullCommit}}"
+      - "--label=org.opencontainers.image.version={{.Version}}"
+      - "--label=org.opencontainers.image.source=https://github.com/louiellywton/go-portfolio"
+      - "--label=org.opencontainers.image.description=A friendly CLI tool for Go enthusiasts"
+      - "--label=org.opencontainers.image.licenses=MIT"
+    
+    goos: linux
+    goarch: arm64
+    use: buildx
+
+# Docker manifest for multi-arch support
+docker_manifests:
+  - name_template: "ghcr.io/louiellywton/hello-gopher:latest"
+    image_templates:
+      - "ghcr.io/louiellywton/hello-gopher:latest"
+      - "ghcr.io/louiellywton/hello-gopher:latest-arm64"
+  
+  - name_template: "ghcr.io/louiellywton/hello-gopher:{{ .Tag }}"
+    image_templates:
+      - "ghcr.io/louiellywton/hello-gopher:{{ .Tag }}"
+      - "ghcr.io/louiellywton/hello-gopher:{{ .Tag }}-arm64"
+
 # Metadata for the release
 metadata:
   mod_timestamp: '{{ .CommitTimestamp }}'

@@ -11,6 +11,7 @@ This document provides comprehensive instructions for building, testing, and rel
 - [Testing Strategy](#testing-strategy)
 - [Code Quality & Linting](#code-quality--linting)
 - [Cross-Platform Building](#cross-platform-building)
+- [Docker Support](#docker-support)
 - [Release Process](#release-process)
 - [CI/CD Pipeline](#cicd-pipeline)
 - [Troubleshooting](#troubleshooting)
@@ -386,6 +387,66 @@ Make it executable and run:
 ```bash
 chmod +x build-all.sh
 ./build-all.sh v1.0.0
+```
+
+## 🐳 Docker Support
+
+### Building Docker Images
+
+The project includes Docker support for containerized deployment:
+
+```bash
+# Build Docker image locally
+docker build -t hello-gopher:dev .
+
+# Run the container
+docker run --rm hello-gopher:dev greet --name Docker
+
+# Test all functionality
+docker run --rm hello-gopher:dev --help
+docker run --rm hello-gopher:dev greet
+docker run --rm hello-gopher:dev proverb
+docker run --rm hello-gopher:dev --version
+```
+
+### Multi-Stage Dockerfile
+
+The Dockerfile uses a multi-stage build for optimal image size:
+
+1. **Build Stage**: Uses `golang:1.21-alpine` to compile the binary
+2. **Runtime Stage**: Uses `scratch` for minimal image size (~8MB)
+
+Key optimizations:
+- Static binary compilation (`CGO_ENABLED=0`)
+- Binary size reduction (`-ldflags="-s -w"`)
+- Minimal attack surface (scratch base image)
+- Layer caching optimization
+
+### Docker Release Integration
+
+Docker images are automatically built and published via Goreleaser:
+
+```bash
+# Images are published to GitHub Container Registry
+# - ghcr.io/louiellywton/hello-gopher:latest
+# - ghcr.io/louiellywton/hello-gopher:v1.x.x
+# - Multi-arch support (amd64/arm64)
+
+# Pull and run published image
+docker pull ghcr.io/louiellywton/hello-gopher:latest
+docker run --rm ghcr.io/louiellywton/hello-gopher:latest greet --name Production
+```
+
+### Testing Docker Functionality
+
+```bash
+# Run Docker validation script
+./scripts/validate-docker-config.sh    # Linux/macOS
+.\scripts\validate-docker-config.ps1   # Windows
+
+# Run comprehensive Docker tests (requires Docker running)
+./scripts/test-docker.sh               # Linux/macOS
+.\scripts\test-docker.ps1              # Windows
 ```
 
 ## 🚢 Release Process
